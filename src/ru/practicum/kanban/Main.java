@@ -1,11 +1,10 @@
-import model.Epic;
-import model.StatusOfTask;
-import model.SubTask;
-import model.Task;
-import service.TaskManager;
+package ru.practicum.kanban;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import ru.practicum.kanban.model.Epic;
+import ru.practicum.kanban.model.StatusOfTask;
+import ru.practicum.kanban.model.SubTask;
+import ru.practicum.kanban.model.Task;
+import ru.practicum.kanban.service.TaskManager;
 
 public class Main {
 
@@ -16,13 +15,10 @@ public class Main {
 
         Epic epic1 = taskManager.createEpic(new Epic("Первый epic", "с двумя подзадачами"));
         SubTask subTask1 = taskManager.createSubTask(new SubTask("Подзадача первая", "Подзадача для первого epica", epic1.getId()));
-        epic1.addTask(subTask1);
         SubTask subTask2 = taskManager.createSubTask(new SubTask("Подзадача вторая", "Подзадача для первого epica", epic1.getId()));
-        epic1.addTask(subTask2);
 
         Epic epic2 = taskManager.createEpic(new Epic("Второй epic", "с одной позодачай"));
         SubTask subTask3 = taskManager.createSubTask(new SubTask("Еще одна подзадача", epic2.getId()));
-        epic2.addTask(subTask2);
 
         printTasks(taskManager);
         System.out.println("\n\n");
@@ -31,9 +27,9 @@ public class Main {
         task2.setStatus(StatusOfTask.IN_PROGRESS);
 
         subTask1.setStatus(StatusOfTask.DONE);
-        subTask2.setStatus(StatusOfTask.DONE);
+        subTask2.setStatus(StatusOfTask.IN_PROGRESS);
         taskManager.updateSubTask(subTask1);
-        taskManager.updateTask(subTask2);
+        taskManager.updateSubTask(subTask2);
 
         subTask3.setStatus(StatusOfTask.IN_PROGRESS);
         taskManager.updateSubTask(subTask3);
@@ -43,6 +39,7 @@ public class Main {
 
         taskManager.deleteTask(task2.getId());
         taskManager.deleteEpic(epic2.getId());
+        taskManager.deleteSubTask(subTask2.getId());
         printTasks(taskManager);
 
     }

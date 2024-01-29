@@ -1,8 +1,8 @@
-package service;
+package ru.practicum.kanban.service;
 
-import model.Epic;
-import model.SubTask;
-import model.Task;
+import ru.practicum.kanban.model.Epic;
+import ru.practicum.kanban.model.SubTask;
+import ru.practicum.kanban.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,10 +11,10 @@ import java.util.List;
 public class TaskManager {
     private HashMap<Integer, Task> tasks;
     private HashMap<Integer, Epic> epics;
-    private  HashMap<Integer, SubTask> subTasks;
-    int idSequence = 0;
+    private HashMap<Integer, SubTask> subTasks;
+    private int idSequence = 0;
 
-    public int generateId() {
+    private int generateId() {
         return ++idSequence;
     }
 
@@ -38,6 +38,8 @@ public class TaskManager {
 
     public SubTask createSubTask(SubTask subTask) {
         subTask.setId(generateId());
+        Epic epic = epics.get(subTask.getEpicId());
+        epic.addTask(subTask);
         subTasks.put(subTask.getId(), subTask);
         return subTask;
     }
@@ -60,10 +62,15 @@ public class TaskManager {
 
     public void clearEpics() {
         epics.clear();
+        subTasks.clear();
     }
 
     public void clearSubTask() {
         subTasks.clear();
+        for (Epic epic : epics.values()) {
+            epic.getSubTasks().clear();
+            epic.calculateStatus();
+        }
     }
 
     public Task getTask(int id) {
@@ -97,6 +104,7 @@ public class TaskManager {
         if (savedEpic == null) {
             return;
         }
+        savedEpic.removeTask(subTask);
         savedEpic.updateTask(subTask);
     }
 
@@ -105,10 +113,19 @@ public class TaskManager {
     }
 
     public void deleteEpic(int id) {
-        epics.remove(id);
+        Epic removedEpic = epics.remove(id);
+        if (removedEpic != null) {
+            for (SubTask subTask : removedEpic.getSubTasks()) {
+                subTasks.remove(subTask.getId());
+            }
+        }
     }
 
     public void deleteSubTask(int id) {
-        subTasks.remove(id);
+        SubTask removedSubTask = subTasks.remove(id);
+        if (removedSubTask != null) {
+            epics.computeIfPresent(removedSubTask.getEpicId(),
+                    (epicId, epic) -> {if (epic != null) epic.removeTask(removedSubTask); return epic;});
+        }
     }
 }

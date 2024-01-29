@@ -1,9 +1,9 @@
-package model;
+package ru.practicum.kanban.model;
 
 import java.util.*;
 
 public class Epic extends Task {
-    private Set<SubTask> subTasks = new HashSet<>();
+    private final Set<SubTask> subTasks = new HashSet<>();
 
     public Epic(String title, String description) {
         super(title, description);
@@ -15,11 +15,6 @@ public class Epic extends Task {
 
     public Set<SubTask> getSubTasks() {
         return subTasks;
-    }
-
-    public void setSubTasks(HashSet<SubTask> subTasks) {
-        this.subTasks = subTasks;
-        calculateStatus();
     }
 
     public void addTask(SubTask subTask) {

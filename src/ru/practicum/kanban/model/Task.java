@@ -1,4 +1,4 @@
-package model;
+package ru.practicum.kanban.model;
 
 import java.util.Objects;
 
