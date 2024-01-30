@@ -1,7 +1,7 @@
 package ru.practicum.kanban.model;
 
 public class SubTask extends Task {
-    private int epicId;
+    private final int epicId;
 
     public SubTask(String title, String description, int epicId) {
         super(title, description);
@@ -15,9 +15,5 @@ public class SubTask extends Task {
 
     public int getEpicId() {
         return epicId;
-    }
-
-    public void setEpicId(int epicId) {
-        this.epicId = epicId;
     }
 }

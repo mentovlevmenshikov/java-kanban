@@ -14,10 +14,6 @@ public class TaskManager {
     private HashMap<Integer, SubTask> subTasks;
     private int idSequence = 0;
 
-    private int generateId() {
-        return ++idSequence;
-    }
-
     public TaskManager() {
         tasks = new HashMap<>();
         epics = new HashMap<>();
@@ -104,8 +100,9 @@ public class TaskManager {
         if (savedEpic == null) {
             return;
         }
-        savedEpic.removeTask(subTask);
+        savedEpic.removeTask(subTasks.get(subTask.getId()));
         savedEpic.updateTask(subTask);
+        subTasks.put(subTask.getId(), subTask);
     }
 
     public void deleteTask(int id) {
@@ -125,7 +122,11 @@ public class TaskManager {
         SubTask removedSubTask = subTasks.remove(id);
         if (removedSubTask != null) {
             epics.computeIfPresent(removedSubTask.getEpicId(),
-                    (epicId, epic) -> {if (epic != null) epic.removeTask(removedSubTask); return epic;});
+                    (epicId, epic) -> {epic.removeTask(removedSubTask); return epic;});
         }
+    }
+
+    private int generateId() {
+        return ++idSequence;
     }
 }

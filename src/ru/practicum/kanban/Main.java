@@ -6,6 +6,8 @@ import ru.practicum.kanban.model.SubTask;
 import ru.practicum.kanban.model.Task;
 import ru.practicum.kanban.service.TaskManager;
 
+import java.util.Objects;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -41,7 +43,6 @@ public class Main {
         taskManager.deleteEpic(epic2.getId());
         taskManager.deleteSubTask(subTask2.getId());
         printTasks(taskManager);
-
     }
 
     public static void printTasks(TaskManager taskManager) {
