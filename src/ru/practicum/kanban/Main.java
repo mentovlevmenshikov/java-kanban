@@ -6,8 +6,6 @@ import ru.practicum.kanban.model.SubTask;
 import ru.practicum.kanban.model.Task;
 import ru.practicum.kanban.service.TaskManager;
 
-import java.util.Objects;
-
 public class Main {
 
     public static void main(String[] args) {
