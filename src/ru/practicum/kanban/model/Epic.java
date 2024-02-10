@@ -23,7 +23,10 @@ public class Epic extends Task {
     }
 
     public void updateTask(SubTask subTask) {
-        subTasks.add(subTask);
+        if (!subTasks.add(subTask)) {
+            subTasks.remove(subTask);
+            subTasks.add(subTask);
+        }
         calculateStatus();
     }
 

@@ -4,129 +4,44 @@ import ru.practicum.kanban.model.Epic;
 import ru.practicum.kanban.model.SubTask;
 import ru.practicum.kanban.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-public class TaskManager {
-    private final HashMap<Integer, Task> tasks;
-    private final HashMap<Integer, Epic> epics;
-    private final HashMap<Integer, SubTask> subTasks;
-    private int idSequence = 0;
+public interface TaskManager {
+    Task createTask(Task task);
 
-    public TaskManager() {
-        tasks = new HashMap<>();
-        epics = new HashMap<>();
-        subTasks = new HashMap<>();
-    }
+    Epic createEpic(Epic epic);
 
-    public Task createTask(Task task) {
-        task.setId(generateId());
-        tasks.put(task.getId(), task);
-        return task;
-    }
+    SubTask createSubTask(SubTask subTask);
 
-    public Epic createEpic(Epic epic) {
-        epic.setId(generateId());
-        epics.put(epic.getId(), epic);
-        return epic;
-    }
+    List<Task> getAllTasks();
 
-    public SubTask createSubTask(SubTask subTask) {
-        subTask.setId(generateId());
-        Epic epic = epics.get(subTask.getEpicId());
-        epic.addTask(subTask);
-        subTasks.put(subTask.getId(), subTask);
-        return subTask;
-    }
+    List<Epic> getAllEpics();
 
-    public List<Task> getAllTasks() {
-        return new ArrayList<>(tasks.values());
-    }
+    List<SubTask> getAllSubTasks();
 
-    public List<Epic> getAllEpics() {
-        return new ArrayList<>(epics.values());
-    }
+    void clearTasks();
 
-    public List<SubTask> getAllSubTasks() {
-        return new ArrayList<>(subTasks.values());
-    }
+    void clearEpics();
 
-    public void clearTasks() {
-        tasks.clear();
-    }
+    void clearSubTask();
 
-    public void clearEpics() {
-        epics.clear();
-        subTasks.clear();
-    }
+    Task getTask(int id);
 
-    public void clearSubTask() {
-        subTasks.clear();
-        for (Epic epic : epics.values()) {
-            epic.getSubTasks().clear();
-            epic.calculateStatus();
-        }
-    }
+    Epic getEpic(int id);
 
-    public Task getTask(int id) {
-        return tasks.get(id);
-    }
+    SubTask getSubTask(int id);
 
-    public Epic getEpic(int id) {
-        return epics.get(id);
-    }
+    void updateTask(Task task);
 
-    public SubTask getSubTask(int id) {
-        return subTasks.get(id);
-    }
+    void updateEpic(Epic epic);
 
-    public void updateTask(Task task) {
-        tasks.put(task.getId(), task);
-    }
+    void updateSubTask(SubTask subTask);
 
-    public void updateEpic(Epic epic) {
-        Epic saved = epics.get(epic.getId());
-        if (saved == null) {
-            return;
-        }
-        saved.setTitle(epic.getTitle());
-        saved.setDescription(epic.getDescription());
-    }
+    void deleteTask(int id);
 
-    public void updateSubTask(SubTask subTask) {
-        int epicId = subTask.getEpicId();
-        Epic savedEpic = epics.get(epicId);
-        if (savedEpic == null) {
-            return;
-        }
-        savedEpic.removeTask(subTasks.get(subTask.getId()));
-        savedEpic.updateTask(subTask);
-        subTasks.put(subTask.getId(), subTask);
-    }
+    void deleteEpic(int id);
 
-    public void deleteTask(int id) {
-        tasks.remove(id);
-    }
+    void deleteSubTask(int id);
 
-    public void deleteEpic(int id) {
-        Epic removedEpic = epics.remove(id);
-        if (removedEpic != null) {
-            for (SubTask subTask : removedEpic.getSubTasks()) {
-                subTasks.remove(subTask.getId());
-            }
-        }
-    }
-
-    public void deleteSubTask(int id) {
-        SubTask removedSubTask = subTasks.remove(id);
-        if (removedSubTask != null) {
-            epics.computeIfPresent(removedSubTask.getEpicId(),
-                    (epicId, epic) -> {epic.removeTask(removedSubTask); return epic;});
-        }
-    }
-
-    private int generateId() {
-        return ++idSequence;
-    }
+    List<Task> getHistory();
 }
