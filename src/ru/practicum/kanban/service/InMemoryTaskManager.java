@@ -7,11 +7,12 @@ import ru.practicum.kanban.model.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, Task> tasks;
-    private final HashMap<Integer, Epic> epics;
-    private final HashMap<Integer, SubTask> subTasks;
+    private final Map<Integer, Task> tasks;
+    private final Map<Integer, Epic> epics;
+    private final Map<Integer, SubTask> subTasks;
     private int idSequence = 0;
     private final HistoryManager  history;
 
@@ -83,30 +84,27 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTask(int id) {
         Task task = tasks.get(id);
-        if (task == null) {
-            return null;
+        if (task != null) {
+            history.add(task);
         }
-        history.add(task);
         return task;
     }
 
     @Override
     public Epic getEpic(int id) {
         Epic epic = epics.get(id);
-        if (epic == null) {
-            return null;
+        if (epic != null) {
+            history.add(epic);
         }
-        history.add(epic);
         return epic;
     }
 
     @Override
     public SubTask getSubTask(int id) {
         SubTask subTask = subTasks.get(id);
-        if (subTask == null) {
-            return null;
+        if (subTask != null) {
+            history.add(subTask);
         }
-        history.add(subTask);
         return subTask;
     }
 

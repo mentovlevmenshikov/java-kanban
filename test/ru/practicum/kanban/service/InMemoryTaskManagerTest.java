@@ -78,7 +78,7 @@ class InMemoryTaskManagerTest {
         assertNotNull(subTasks, "Подзадачи не возвращаются.");
         assertEquals(2, subTasks.size(), "Неверное количество подзадач.");
         assertEquals(subTask1, subTasks.get(0), "Подзадачи не совпадают 1.");
-        assertEquals(subTask2, subTask2, "Подзадачи не совпадают 2");
+        assertEquals(subTask2, subTasks.get(1), "Подзадачи не совпадают 2");
 
         assertEquals(epic.getId(), subTasks.get(0).getEpicId(), "Эпики у подзадачи не совпадают 1.");
         assertEquals(epic.getId(), subTasks.get(1).getEpicId(), "Эпики у подзадачи не совпадают 2.");
@@ -86,16 +86,16 @@ class InMemoryTaskManagerTest {
 
     @Test
     void clearTasks() {
-        Task task1 = taskManager.createTask(new Task("Первая задача"));
-        Task task2 = taskManager.createTask(new Task("Вторая задача"));
+        taskManager.createTask(new Task("Первая задача"));
+        taskManager.createTask(new Task("Вторая задача"));
         taskManager.clearTasks();
         assertEquals(0, taskManager.getAllTasks().size(), "Неверное количество задач после очистки.");
     }
 
     @Test
     void clearEpics() {
-        Epic epic1 = taskManager.createEpic(new Epic("Первый эпик"));
-        Epic epic2 = taskManager.createEpic(new Epic("Второй эпик"));
+        taskManager.createEpic(new Epic("Первый эпик"));
+        taskManager.createEpic(new Epic("Второй эпик"));
         taskManager.clearEpics();
         assertEquals(0, taskManager.getAllEpics().size(), "Неверное количество эпиков после очистки.");
     }
@@ -103,9 +103,9 @@ class InMemoryTaskManagerTest {
     @Test
     void clearSubTask() {
         Epic epic = taskManager.createEpic(new Epic("Первый epic", "эпик"));
-        SubTask subTask1 = taskManager.createSubTask(new SubTask("Первый subtask", epic.getId()));
-        SubTask subTask2 = taskManager.createSubTask(new SubTask("Второй subtask", epic.getId()));
-        taskManager.clearSubTask();;
+        taskManager.createSubTask(new SubTask("Первый subtask", epic.getId()));
+        taskManager.createSubTask(new SubTask("Второй subtask", epic.getId()));
+        taskManager.clearSubTask();
         assertEquals(0, taskManager.getAllSubTasks().size(), "Неверное количество подзадач после очистки.");
     }
 
@@ -130,7 +130,7 @@ class InMemoryTaskManagerTest {
     @Test
     void updateEpic() {
         Epic epicOriginal = taskManager.createEpic(new Epic("Эпик", "исходный"));
-        SubTask subTask = taskManager.createSubTask(new SubTask("Первый subtask", epicOriginal.getId()));
+        taskManager.createSubTask(new SubTask("Первый subtask", epicOriginal.getId()));
         int idOriginal = epicOriginal.getId();
         String newTitle = "Новый эпик";
         String newDescription = "новое описание";
@@ -168,7 +168,7 @@ class InMemoryTaskManagerTest {
     @Test
     void deleteTask() {
         Task task1 = taskManager.createTask(new Task("Первая задача"));
-        Task task2 = taskManager.createTask(new Task("Вторая задача"));
+        taskManager.createTask(new Task("Вторая задача"));
         taskManager.deleteTask(task1.getId());
         assertNull(taskManager.getTask(task1.getId()), "Задача не была удалена.");
         assertEquals(1, taskManager.getAllTasks().size(), "Неверное количество задач после удаления.");
@@ -176,13 +176,14 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteEpic() {
-        Epic epic1 = taskManager.createEpic(new Epic("Первый эпик"));
+        taskManager.createEpic(new Epic("Первый эпик"));
         Epic epic2 = taskManager.createEpic(new Epic("Второй эпик"));
         SubTask subTask = taskManager.createSubTask(new SubTask("Подзадача", epic2.getId()));
         taskManager.deleteEpic(epic2.getId());
-        List<Epic> epics = taskManager.getAllEpics();
         assertNull(taskManager.getEpic(epic2.getId()), "Эпик не был удален.");
-        assertEquals(1, taskManager.getAllEpics().size(), "Неверное количество эпиков после удаления.");
+        List<Epic> epics = taskManager.getAllEpics();
+        assertNotNull(epics, "Эпики не возвращаются.");
+        assertEquals(1, epics.size(), "Неверное количество эпиков после удаления.");
         assertNull(taskManager.getSubTask(subTask.getId()), "Подзадача из удаленного эпика не удалена.");
     }
 
@@ -190,7 +191,7 @@ class InMemoryTaskManagerTest {
     void deleteSubTask() {
         Epic epic = taskManager.createEpic(new Epic("Первый epic", "эпик"));
         SubTask subTask1 = taskManager.createSubTask(new SubTask("Первый subtask", epic.getId()));
-        SubTask subTask2 = taskManager.createSubTask(new SubTask("Второй subtask", epic.getId()));
+        taskManager.createSubTask(new SubTask("Второй subtask", epic.getId()));
         taskManager.deleteSubTask(subTask1.getId());
         assertNull(taskManager.getSubTask(subTask1.getId()), "Подзадача не была удалена.");
         assertEquals(1, taskManager.getAllSubTasks().size(), "Неверное количество подзадач после удаления.");
@@ -199,7 +200,6 @@ class InMemoryTaskManagerTest {
     @Test
     void getHistory() {
         int countTask = 12;
-        int [] ids = new int[countTask/2];
         for (int i = 0; i < countTask; i++) {
             taskManager.createTask(new Task("Задача № " + (i+1)));
         }
@@ -212,15 +212,15 @@ class InMemoryTaskManagerTest {
         assertEquals(countHistory, taskManager.getHistory().size(), "Неверное число задач в истории.");
 
         Epic epic = taskManager.createEpic(new Epic("Эпик"));
-        Task taskLastInHistory = taskManager.getHistory().get(countHistory-1);
+        Task taskFirstInHistory = taskManager.getHistory().get(0);
         taskManager.getEpic(epic.getId());
         assertTrue(taskManager.getHistory().contains(epic), "Эпик не попал в историю.");
-        assertFalse(taskManager.getHistory().contains(taskLastInHistory), "Задача не удалилась из истории.");
+        assertFalse(taskManager.getHistory().contains(taskFirstInHistory), "Задача не удалилась из истории.");
 
         SubTask subTaskTask = taskManager.createSubTask(new SubTask("Подзадача", epic.getId()));
-        taskLastInHistory = taskManager.getHistory().get(countHistory-1);
+        taskFirstInHistory = taskManager.getHistory().get(0);
         taskManager.getSubTask(subTaskTask.getId());
         assertTrue(taskManager.getHistory().contains(subTaskTask), "Подзадача не попала в историю.");
-        assertFalse(taskManager.getHistory().contains(taskLastInHistory), "Задача не удалилась из истории.");
+        assertFalse(taskManager.getHistory().contains(taskFirstInHistory), "Задача не удалилась из истории.");
     }
 }

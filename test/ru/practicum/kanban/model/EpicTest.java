@@ -22,8 +22,8 @@ class EpicTest {
         SubTask subTask = new SubTask("Подзадача", epic.getId());
         epic.addTask(subTask);
         Set<SubTask> subTasks = epic.getSubTasks();
-        assertTrue(subTasks.contains(subTask), "Подзадача не добавилась.");
         assertNotNull(subTasks, "Список подзадач пустой.");
+        assertTrue(subTasks.contains(subTask), "Подзадача не добавилась.");
         assertEquals(1, subTasks.size(), "Неверное количество подзадач." );
     }
 
@@ -39,13 +39,11 @@ class EpicTest {
         epic.updateTask(subTaskNew);
         Iterator<SubTask> iterator = epic.getSubTasks().iterator();
         assertTrue(iterator.hasNext(), "Отсутсвуют подзадачи");
-        if (iterator.hasNext()) {
-            SubTask subTaskSaved = iterator.next();
-            assertEquals(newTitle, subTaskSaved.getTitle(), "Неверный заголовок подзадачи.");
-            assertEquals(newDescription, subTaskSaved.getDescription(), "Неверное описание подзадачи.");
-            assertEquals(newStatus, subTaskSaved.getStatus(), "Неверный статус подзадачи.");
-            assertEquals(newStatus, epic.getStatus(), "Неверный статус эпика.");
-        }
+        SubTask subTaskSaved = iterator.next();
+        assertEquals(newTitle, subTaskSaved.getTitle(), "Неверный заголовок подзадачи.");
+        assertEquals(newDescription, subTaskSaved.getDescription(), "Неверное описание подзадачи.");
+        assertEquals(newStatus, subTaskSaved.getStatus(), "Неверный статус подзадачи.");
+        assertEquals(newStatus, epic.getStatus(), "Неверный статус эпика.");
     }
 
     @Test

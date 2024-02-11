@@ -6,18 +6,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    LinkedList<Task> history = new LinkedList<>();
-
+    private final LinkedList<Task> history = new LinkedList<>();
+     private static int HISTORY_SIZE = 10;
     @Override
     public void add(Task task) {
-        if (history.size() > 9) {
-            history.removeLast();
+        if (history.size() >= HISTORY_SIZE) {
+            history.removeFirst();
         }
         history.add(task);
     }
 
     @Override
     public List<Task> getHistory() {
-        return history;
+        return new LinkedList<Task>(history);
     }
 }
