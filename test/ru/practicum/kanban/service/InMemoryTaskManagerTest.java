@@ -204,7 +204,6 @@ class InMemoryTaskManagerTest {
             taskManager.createTask(new Task("Задача № " + (i+1)));
         }
 
-        int countHistory = countTask;
         for (Task task : taskManager.getAllTasks()) {
             taskManager.getTask(task.getId());
             assertTrue(taskManager.getHistory().contains(task), "Задача не попала в историю.");
@@ -218,7 +217,7 @@ class InMemoryTaskManagerTest {
             i++;
         }
 
-        assertEquals(countHistory, taskManager.getHistory().size(), "Неверное число задач в истории.");
+        assertEquals(countTask, taskManager.getHistory().size(), "Неверное число задач в истории.");
 
         Epic epic = taskManager.createEpic(new Epic("Эпик"));
         List<Task> history = taskManager.getHistory();
@@ -231,7 +230,6 @@ class InMemoryTaskManagerTest {
         assertEquals(taskFirstInHistory, history.get(history.size() - 1), "Задача не стала последней в истории.");
 
         SubTask subTaskTask = taskManager.createSubTask(new SubTask("Подзадача", epic.getId()));
-        taskFirstInHistory = taskManager.getHistory().get(0);
         taskManager.getSubTask(subTaskTask.getId());
         assertTrue(taskManager.getHistory().contains(subTaskTask), "Подзадача не попала в историю.");
     }
