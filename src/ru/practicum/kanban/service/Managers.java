@@ -2,7 +2,9 @@ package ru.practicum.kanban.service;
 
 public class Managers {
 
-    private Managers() {}
+    private Managers() {
+    }
+
     public static TaskManager getDefaultTaskManager() {
         return new InMemoryTaskManager(getDefaultHistoryManager());
     }
