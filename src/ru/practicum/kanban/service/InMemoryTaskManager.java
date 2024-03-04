@@ -155,7 +155,10 @@ public class InMemoryTaskManager implements TaskManager {
         SubTask removedSubTask = subTasks.remove(id);
         if (removedSubTask != null) {
             epics.computeIfPresent(removedSubTask.getEpicId(),
-                    (epicId, epic) -> {epic.removeTask(removedSubTask); return epic;});
+                    (epicId, epic) -> {
+                        epic.removeTask(removedSubTask);
+                        return epic;
+                    });
         }
     }
 
