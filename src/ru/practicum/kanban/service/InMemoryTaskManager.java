@@ -4,10 +4,7 @@ import ru.practicum.kanban.model.Epic;
 import ru.practicum.kanban.model.SubTask;
 import ru.practicum.kanban.model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
     private final Map<Integer, Task> tasks;
@@ -63,18 +60,22 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTasks() {
+        removeInHistory(tasks.keySet());
         tasks.clear();
     }
 
     @Override
     public void clearEpics() {
+        removeInHistory(epics.keySet());
         epics.clear();
+        removeInHistory(subTasks.keySet());
         subTasks.clear();
     }
 
     @Override
     public void clearSubTask() {
         subTasks.clear();
+        removeInHistory(subTasks.keySet());
         for (Epic epic : epics.values()) {
             epic.getSubTasks().clear();
             epic.calculateStatus();
@@ -137,15 +138,20 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTask(int id) {
-        tasks.remove(id);
+        Task removedTask = tasks.remove(id);
+        if (removedTask != null) {
+            removeInHistory(removedTask.getId());
+        }
     }
 
     @Override
     public void deleteEpic(int id) {
         Epic removedEpic = epics.remove(id);
         if (removedEpic != null) {
+            removeInHistory(removedEpic.getId());
             for (SubTask subTask : removedEpic.getSubTasks()) {
                 subTasks.remove(subTask.getId());
+                removeInHistory(subTask.getId());
             }
         }
     }
@@ -154,6 +160,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteSubTask(int id) {
         SubTask removedSubTask = subTasks.remove(id);
         if (removedSubTask != null) {
+            removeInHistory(removedSubTask.getId());
             epics.computeIfPresent(removedSubTask.getEpicId(),
                     (epicId, epic) -> {
                         epic.removeTask(removedSubTask);
@@ -169,5 +176,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     private int generateId() {
         return ++idSequence;
+    }
+
+    private void removeInHistory(Set<Integer> taskIds) {
+        for (int id : taskIds) {
+            removeInHistory(id);
+        }
+    }
+
+    private void removeInHistory(int id) {
+        history.remove(id);
     }
 }
