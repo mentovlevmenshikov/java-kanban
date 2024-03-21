@@ -6,7 +6,8 @@ import ru.practicum.kanban.model.Task;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class InMemoryHistoryManagerTest {
 
@@ -17,15 +18,26 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
-    void  shouldMaximumTasksInHistory() {
-        int countHistoryMaximum = 10;
-        for (int i = 0; i <  countHistoryMaximum; i++) {
-            Task task = new Task("Тест" + i);
-            historyManager.add(task);
-        }
-        historyManager.add(new Task("Тест"));
+    void shouldOnceInHistory() {
+        Task task = new Task("Тест");
+        historyManager.add(task);
+        historyManager.add(task);
         final List<Task> history = historyManager.getHistory();
-        assertNotNull(history, "История пустая.");
-        assertEquals(countHistoryMaximum, history.size(), "Неверное количество задач в истории." );
+        int count = 0;
+        for (Task taskInHistory : history) {
+            if (task.equals(taskInHistory)) {
+                count++;
+            }
+        }
+        assertEquals(1, count, "Задача встречается в истории не верное количество раз.");
+    }
+
+    @Test
+    void remove() {
+        Task task = new Task("Тест");
+        historyManager.add(task);
+        historyManager.remove(task.getId());
+        final List<Task> history = historyManager.getHistory();
+        assertFalse(history.contains(task), "Задача не удалилась");
     }
 }
